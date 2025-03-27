@@ -112,25 +112,12 @@ def compute_r_fast(X0, Y0, Z0, theta, phi, X_det, Y_det, Z_det, c=2.99e8):
     
     return r
 
-try:
-    from numba.extending import register_jitable
-    gammaln_numba = register_jitable(gammaln)
-except ImportError:
-    # Если нет новой версии Numba, используем обходной путь
-    @njit
-    def gammaln_numba(x):
-        # Простая аппроксимация для положительных x
-        return np.log(np.sqrt(2*np.pi/x)) + x*(np.log(x) - 1)
-
-@njit
-def rho_model_fast(r, Ne, s, r_m=79):
-    term1 = Ne / (2 * np.pi * r_m**2)
-    
-    # Используем кешированную функцию
-    log_term4 = gammaln_numba(4.5 - s) - (gammaln_numba(s) + gammaln_numba(4.5 - 2*s))
-    term4 = np.exp(log_term4)
-    
-    term2 = (r / r_m) ** (s - 2)
-    term3 = (1 + r / r_m) ** (s - 4.5)
-    
-    return term1 * term2 * term3 * term4
+def add_noise(rho, noise_level=0.1, threshold=None):
+    """Добавляет гауссов шум к значениям rho"""
+    noise = np.random.normal(loc=0, scale=noise_level *
+                             np.abs(rho), size=rho.shape)
+    rho_noisy = rho + noise
+    if threshold is not None:
+        rho_noisy = np.minimum(rho_noisy, threshold)
+        
+    return rho_noisy
