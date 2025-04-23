@@ -121,3 +121,29 @@ def add_noise(rho, noise_level=0.1, threshold=None):
         rho_noisy = np.minimum(rho_noisy, threshold)
         
     return rho_noisy
+
+def compute_distance_from_axis(X0, Y0, theta, phi, X_det, Y_det):
+    """
+    Вычисляет расстояние от оси (X0,Y0) до станции (X_det,Y_det)
+    при условии Z0 = Z_det (все Z координаты равны)
+    
+    Параметры:
+        X0, Y0 - координаты оси
+        theta, phi - углы направления оси (в градусах)
+        X_det, Y_det - координаты станций
+        
+    Возвращает:
+        Массив расстояний от оси до каждой станции
+    """
+    theta_rad = np.radians(theta)
+    phi_rad = np.radians(phi)
+    
+    vx = np.cos(phi_rad) * np.sin(theta_rad)
+    vy = np.sin(phi_rad) * np.sin(theta_rad)
+    
+    t = ((X_det - X0) * vx + (Y_det - Y0) * vy)
+    
+    P_ix = X0 + t * vx
+    P_iy = Y0 + t * vy
+    
+    return np.sqrt((X_det - P_ix)**2 + (Y_det - P_iy)**2)
