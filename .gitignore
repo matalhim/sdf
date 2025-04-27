@@ -1,4 +1,5 @@
 corsika/data/p30
 corsika/csv_output
+modeling_parameters/read/corsika/data/p30
 __init__.py
 __pycache__
