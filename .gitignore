@@ -7,6 +7,10 @@ modeling_parameters/read/corsika/output
 modeling_parameters/read/geant/data
 modeling_parameters/read/geant/output
 
+modeling_parameters/reconstruction/output
+
+
 
 __init__.py
 __pycache__
+.env
