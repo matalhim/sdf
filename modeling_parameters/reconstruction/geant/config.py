@@ -2,7 +2,6 @@ from pathlib import Path
 import os
 from modeling_parameters.config import READ_GEANT_OUTPUT_DIR, RECONSTRUCTION_GEANT_OUTPUT_DIR
 
-
 input_path = READ_GEANT_OUTPUT_DIR
 output_path = RECONSTRUCTION_GEANT_OUTPUT_DIR
 

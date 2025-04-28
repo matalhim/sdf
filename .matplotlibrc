@@ -1,0 +1,26 @@
+font.family : Arial
+axes.linewidth : 1.5
+axes.edgecolor : black
+grid.color : gray
+grid.linestyle : --
+grid.alpha : 0.3
+xtick.direction : in
+ytick.direction : in
+
+# размеры шрифтов
+font.size : 14
+axes.labelsize : 16
+axes.titlesize : 16
+legend.fontsize : 16
+xtick.labelsize : 14
+ytick.labelsize : 14
+
+axes.labelweight : bold
+axes.titleweight : bold
+
+# легенда
+legend.title_fontsize : 14
+legend.framealpha : 0.9
+
+
+mathtext.default : regular
