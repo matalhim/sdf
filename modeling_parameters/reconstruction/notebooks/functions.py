@@ -88,7 +88,7 @@ def plot_single_distribution(opt, true, var, E, limit, bin_width, save):
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.ylim(0, None)
     plt.xlim(x_min, x_max)
-    ax.legend(handles=legend_elements, loc='upper right', framealpha=0.9)
+    ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
     if save:
         folder_path = os.path.join(PLOTS_GEANT_DIR, f"{PRIM_PARTICLE}{THETA}", f"E{E}")
@@ -234,7 +234,7 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.ylim(0, None)
     plt.xlim(x_min, x_max)
-    ax.legend(handles=legend_elements, loc='upper right', framealpha=0.9)
+    ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
     if save:
         folder_path = os.path.join(PLOTS_GEANT_DIR, f"{PRIM_PARTICLE}{THETA}", f"E{E}")
@@ -331,7 +331,7 @@ def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, save):
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.ylim(0, None)
     plt.xlim(x_min, x_max)
-    ax.legend(handles=legend_elements, loc='upper right', framealpha=0.9)
+    ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
     if save:
         folder_path = os.path.join(PLOTS_GEANT_DIR, f"{PRIM_PARTICLE}{THETA}", f"E{E}")
@@ -469,7 +469,7 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.ylim(0, None)
     plt.xlim(x_min, x_max)
-    ax.legend(handles=legend_elements, loc='upper right', framealpha=0.9)
+    ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
     if save:
         folder_path = os.path.join(PLOTS_GEANT_DIR, f"{PRIM_PARTICLE}{THETA}", f"E{E}")
