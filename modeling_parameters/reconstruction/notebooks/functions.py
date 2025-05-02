@@ -38,7 +38,7 @@ def plot_single_distribution(opt, true, var, E, limit, bin_width, min_stations, 
     lower = mean - radius
     upper = mean + radius
 
-    fig, ax = plt.subplots(figsize=(15, 8))
+    fig, ax = plt.subplots(figsize=(15, 12))
     bin_width = bin_width
     bins = np.arange(-maxabs - bin_width - 1, maxabs + bin_width + 1, bin_width)
     
@@ -84,7 +84,7 @@ def plot_single_distribution(opt, true, var, E, limit, bin_width, min_stations, 
     
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
-        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров  НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=f'Число событий: {len(diff)}'),
         plt.Line2D([0], [0], color='royalblue', linestyle='-.', lw=2, label = rf'$\mu_{{\Delta {var}}}$={mean:.1f}'),
         plt.Line2D([0], [0], color='royalblue', alpha=0.3, lw=10, label='68%')
@@ -149,7 +149,7 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
     else:
         x_min, x_max = -maxabs - bin_width - 1, maxabs + bin_width + 1
 
-    fig, ax = plt.subplots(figsize=(15, 8))
+    fig, ax = plt.subplots(figsize=(15, 12))
 
     sns.histplot(
         diff_all,
@@ -229,7 +229,7 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
 
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
-        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров  НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
         plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
         plt.Line2D([0], [0], color='none', label=f'число t{top_k}c: {len(diff_top4)}/{len(diff_all)}'),
@@ -287,7 +287,7 @@ def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, min_station
     lower = mean - radius
     upper = mean + radius
 
-    fig, ax = plt.subplots(figsize=(15, 8))
+    fig, ax = plt.subplots(figsize=(15, 12))
     bin_width = bin_width
     bins = np.arange(-maxabs - bin_width - 1, maxabs + bin_width + 1, bin_width)
     
@@ -333,7 +333,7 @@ def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, min_station
     
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
-        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=f'Число событий: {len(diff)}'),
         plt.Line2D([0], [0], color='royalblue', linestyle='-.', lw=2, label = rf'$\mu_{{\Delta  lg(N_e)}}$={mean:.1f}'),
         plt.Line2D([0], [0], color='royalblue', alpha=0.3, lw=10, label='68%')
@@ -392,7 +392,7 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
     else:
         x_min, x_max = -maxabs - bin_width - 1, maxabs + bin_width + 1
 
-    fig, ax = plt.subplots(figsize=(15, 8))
+    fig, ax = plt.subplots(figsize=(15, 12))
 
     sns.histplot(
         diff_all,
@@ -472,7 +472,7 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
 
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
-        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров  НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
         plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
         plt.Line2D([0], [0], color='none', label=f'число t{top_k}c: {len(diff_top4)}/{len(diff_all)}'),
@@ -513,8 +513,18 @@ def ast_df(df):
     df['worked_stations'] = df['worked_stations'].apply(ast.literal_eval)
     
 
-def process_df(df, X_det, Y_det, Z_det, min_stations=5, top_k=3):
-    df_filtered = df[df['worked_stations'].apply(len) >= min_stations]
+def process_df(df, X_det, Y_det, Z_det, min_clusters=2, top_k=3):
+    def count_triggered_clusters(worked_stations):
+        clusters = [list(range(i, i + 4)) for i in range(0, 36, 4)] 
+        count = 0
+        for cluster in clusters:
+            triggered = len(set(cluster) & set(worked_stations))
+            if triggered >= 2:
+                count += 1
+        return count
+
+
+    df_filtered = df[df['worked_stations'].apply(count_triggered_clusters) >= min_clusters]
 
     theta = np.array(df_filtered['theta'])
     phi = np.array(df_filtered['phi'])
@@ -610,4 +620,3 @@ def process_df(df, X_det, Y_det, Z_det, min_stations=5, top_k=3):
     }
 
     return arrays
-
