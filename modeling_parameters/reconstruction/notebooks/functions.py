@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import ast
 from modeling_parameters.config import (
     PRIM_PARTICLE, 
     THETA,
@@ -10,13 +11,18 @@ from modeling_parameters.config import (
     PLOTS_GEANT_DIR,
 )
 
+from modeling_parameters.reconstruction.geant.functions import(
+     compute_r,
+)
+
+
 import matplotlib as mpl
 mpl.rc_file(MATPLOTLIBRC_PATH)
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plot_single_distribution(opt, true, var, E, limit, bin_width, save):
+def plot_single_distribution(opt, true, var, E, limit, bin_width, min_stations, top_k, ymax, save):
     """
     Строит график для delta(var)
     opt: np.array оптимизированных значений
@@ -78,6 +84,7 @@ def plot_single_distribution(opt, true, var, E, limit, bin_width, save):
     
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=f'Число событий: {len(diff)}'),
         plt.Line2D([0], [0], color='royalblue', linestyle='-.', lw=2, label = rf'$\mu_{{\Delta {var}}}$={mean:.1f}'),
         plt.Line2D([0], [0], color='royalblue', alpha=0.3, lw=10, label='68%')
@@ -85,8 +92,10 @@ def plot_single_distribution(opt, true, var, E, limit, bin_width, save):
 
     plt.ylabel('Вероятность')
     plt.xlabel(rf'$\Delta {var}$')
+    ymin = 0
+    ax.set_ylim(ymin, ymax)
+    ax.set_yticks(np.linspace(ymin, ymax, 6))
     plt.grid(True, linestyle='--', alpha=0.5)
-    plt.ylim(0, None)
     plt.xlim(x_min, x_max)
     ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
@@ -101,15 +110,15 @@ def plot_single_distribution(opt, true, var, E, limit, bin_width, save):
         plt.show()
 
     
-def plot_single_distribution_by_name(arrays, varname, E, limit=None, bin_width=5, save=False):
+def plot_single_distribution_by_name(arrays, varname, E, limit=None, bin_width=5, min_stations=1, top_k=1, ymax=1, save=False):
 
     opt_all = arrays[f'{varname}_opt']
     true_all = arrays[f'{varname}']
-    plot_single_distribution(opt_all, true_all, varname, E, limit=limit, bin_width=bin_width, save=save)
+    plot_single_distribution(opt_all, true_all, varname, E, limit, bin_width, min_stations, top_k, ymax, save)
 
     
 
-def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit, bin_width, save):
+def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit, bin_width, min_stations, top_k, ymax, save):
     """
     Строит график для delta(var) двух выборок: всех событий и top4central событий.
     
@@ -220,19 +229,22 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
 
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
-        plt.Line2D([0], [0], color='none', label=r't4c: $\text{argmax}^{(4)}_{\substack{i \in S}} \rho_i \subset C $'),
-        plt.Line2D([0], [0], color='none', label=f'число t4c: {len(diff_top4)}/{len(diff_all)}'),
+        plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
+        plt.Line2D([0], [0], color='none', label=f'число t{top_k}c: {len(diff_top4)}/{len(diff_all)}'),
         plt.Line2D([0], [0], color='royalblue', lw=2, label='все события'),
-        plt.Line2D([0], [0], color='crimson', lw=2, label='t4c события'),
+        plt.Line2D([0], [0], color='crimson', lw=2, label=f't{top_k}c события'),
         plt.Line2D([0], [0], color='crimson', linestyle='-.', lw=2, label=rf'$\mu_{{\Delta {var}}}=${diff_top4.mean():.1f}'),
         plt.Line2D([0], [0], color='crimson', alpha=0.2, lw=10, label='68%')
     ]
 
     plt.ylabel('Вероятность')
     plt.xlabel(rf'$\Delta {var}$')
+    ymin = 0
+    ax.set_ylim(ymin, ymax)
+    ax.set_yticks(np.linspace(ymin, ymax, 6))
     plt.grid(True, linestyle='--', alpha=0.5)
-    plt.ylim(0, None)
     plt.xlim(x_min, x_max)
     ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
@@ -247,19 +259,19 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
         plt.show()
     
 
-def plot_two_distributions_by_name(arrays, varname, E, limit=None, bin_width=5, save=False):
+def plot_two_distributions_by_name(arrays, varname, E, limit=None, bin_width=5, min_stations=1, top_k=1, ymax=1, save=False):
 
     opt_all = arrays[f'{varname}_opt']
     true_all = arrays[f'{varname}']
     opt_top4 = arrays[f't4c_{varname}_opt']
     true_top4 = arrays[f't4c_{varname}']
 
-    plot_two_distributions(opt_all, true_all, opt_top4, true_top4, varname, E, limit, bin_width, save)
+    plot_two_distributions(opt_all, true_all, opt_top4, true_top4, varname, E, limit, bin_width, min_stations, top_k, ymax, save)
 
 
 
 
-def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, save):
+def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, min_stations, top_k, ymax, save):
     """
     Строит график для delta(var)
     opt: np.array оптимизированных значений
@@ -321,6 +333,7 @@ def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, save):
     
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=f'Число событий: {len(diff)}'),
         plt.Line2D([0], [0], color='royalblue', linestyle='-.', lw=2, label = rf'$\mu_{{\Delta  lg(N_e)}}$={mean:.1f}'),
         plt.Line2D([0], [0], color='royalblue', alpha=0.3, lw=10, label='68%')
@@ -328,8 +341,12 @@ def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, save):
 
     plt.ylabel('Вероятность')
     plt.xlabel(rf'$\Delta  lg(N_e)$')
+    
+    ymin = 0
+    ax.set_ylim(ymin, ymax)
+    ax.set_yticks(np.linspace(ymin, ymax, 6))
+    
     plt.grid(True, linestyle='--', alpha=0.5)
-    plt.ylim(0, None)
     plt.xlim(x_min, x_max)
     ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
@@ -344,7 +361,7 @@ def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, save):
         plt.show()
 
 
-def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, limit, bin_width, save):
+def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, limit, bin_width, min_stations, top_k, ymax, save):
     """
     Строит график для delta(var) двух выборок: всех событий и top4central событий.
     
@@ -455,19 +472,24 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
 
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
+        plt.Line2D([0], [0], color='none', label=f'мин сработавших станций НШ: {min_stations}'),
         plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
-        plt.Line2D([0], [0], color='none', label=r't4c: $\text{argmax}^{(4)}_{\substack{i \in S}} \rho_i \subset C $'),
-        plt.Line2D([0], [0], color='none', label=f'число t4c: {len(diff_top4)}/{len(diff_all)}'),
+        plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
+        plt.Line2D([0], [0], color='none', label=f'число t{top_k}c: {len(diff_top4)}/{len(diff_all)}'),
         plt.Line2D([0], [0], color='royalblue', lw=2, label='все события'),
-        plt.Line2D([0], [0], color='crimson', lw=2, label='t4c события'),
+        plt.Line2D([0], [0], color='crimson', lw=2, label=f't{top_k}c события'),
         plt.Line2D([0], [0], color='crimson', linestyle='-.', lw=2,  label = rf'$\mu_{{\Delta  lg(N_e)}}$={mean:.1f}'),
         plt.Line2D([0], [0], color='crimson', alpha=0.2, lw=10, label='68%')
     ]
 
     plt.ylabel('Вероятность')
     plt.xlabel(rf'$\Delta  lg(N_e)$')
+    
+    ymin = 0
+    plt.ylim(ymin, ymax)
+    ax.set_yticks(np.linspace(ymin, ymax, 6))
+    
     plt.grid(True, linestyle='--', alpha=0.5)
-    plt.ylim(0, None)
     plt.xlim(x_min, x_max)
     ax.legend(handles=legend_elements, loc='best', framealpha=0.9)
     
@@ -480,3 +502,112 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
         print(f"График сохранён в {filename}")
     else:
         plt.show()
+        
+
+
+def ast_df(df):
+    df['r'] = df['r'].apply(ast.literal_eval)
+    df['rho'] = df['rho'].apply(ast.literal_eval)
+    df['mask'] = df['mask'].apply(ast.literal_eval)
+    df['worked_clusters'] = df['worked_clusters'].apply(ast.literal_eval)
+    df['worked_stations'] = df['worked_stations'].apply(ast.literal_eval)
+    
+
+def process_df(df, X_det, Y_det, Z_det, min_stations=5, top_k=3):
+    df_filtered = df[df['worked_stations'].apply(len) >= min_stations]
+
+    theta = np.array(df_filtered['theta'])
+    phi = np.array(df_filtered['phi'])
+
+    X = np.array(df_filtered['X0'])
+    X_opt = np.array(df_filtered['X0_opt'])
+
+    Y = np.array(df_filtered['Y0'])
+    Y_opt = np.array(df_filtered['Y0_opt'])
+
+    Ne = np.array(df_filtered['Ne'])
+    Ne_opt = np.array(df_filtered['Ne_opt'])
+
+    s = np.array(df_filtered['s'])
+    s_opt = np.array(df_filtered['s_opt'])
+
+    rho = np.array(df_filtered['rho'])
+    loss = np.array(df_filtered['loss'])
+
+    r = []
+    r_opt = []
+
+    for i in range(len(X)):
+        r.append(compute_r(X[i], Y[i], -18, theta[i], phi[i], X_det, Y_det, Z_det))
+        r_opt.append(compute_r(X_opt[i], Y_opt[i], -18, theta[i], phi[i], X_det, Y_det, Z_det))
+
+    r = np.array(r)
+    r_opt = np.array(r_opt)
+
+    def is_topk_central(row, top_k=4):
+        worked_stations = row['worked_stations']
+        rho = row['rho']
+        stations_rho = list(zip(worked_stations, rho))
+        stations_rho_sorted = sorted(stations_rho, key=lambda x: x[1], reverse=True)
+        topk_stations = [station for station, _ in stations_rho_sorted[:top_k]]
+        return all(station in CENTRAL_STATIONS for station in topk_stations)
+
+    topkc_mask = df_filtered.apply(lambda row: is_topk_central(row, top_k=top_k), axis=1)
+    topkc_df = df_filtered[topkc_mask]
+
+    t4c_X = np.array(topkc_df['X0'])
+    t4c_X_opt = np.array(topkc_df['X0_opt'])
+
+    t4c_Y = np.array(topkc_df['Y0'])
+    t4c_Y_opt = np.array(topkc_df['Y0_opt'])
+
+    t4c_Ne = np.array(topkc_df['Ne'])
+    t4c_Ne_opt = np.array(topkc_df['Ne_opt'])
+
+    t4c_s = np.array(topkc_df['s'])
+    t4c_s_opt = np.array(topkc_df['s_opt'])
+
+    t4c_r = r[topkc_mask]
+    t4c_r_opt = r_opt[topkc_mask]
+
+    t4c_rho = np.array(topkc_df['rho'])
+    t4c_loss = np.array(topkc_df['loss'])
+
+    r = np.concatenate(r)
+    r_opt = np.concatenate(r_opt)
+
+    t4c_r = np.concatenate(t4c_r)
+    t4c_r_opt = np.concatenate(t4c_r_opt)
+
+    arrays = {
+        'X': X,
+        'X_opt': X_opt,
+        'Y': Y,
+        'Y_opt': Y_opt,
+        'Ne': Ne,
+        'Ne_opt': Ne_opt,
+        's': s,
+        's_opt': s_opt,
+        'r': r,
+        'r_opt': r_opt,
+
+        'rho': rho,
+        'loss': loss,
+
+        't4c_X': t4c_X,
+        't4c_X_opt': t4c_X_opt,
+        't4c_Y': t4c_Y,
+        't4c_Y_opt': t4c_Y_opt,
+        't4c_Ne': t4c_Ne,
+        't4c_Ne_opt': t4c_Ne_opt,
+        't4c_s': t4c_s,
+        't4c_s_opt': t4c_s_opt,
+        't4c_r': t4c_r,
+        't4c_r_opt': t4c_r_opt,
+
+        't4c_rho': t4c_rho,
+        't4c_loss': t4c_loss,
+    }
+
+    return arrays
+
