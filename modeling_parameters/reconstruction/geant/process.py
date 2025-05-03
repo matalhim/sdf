@@ -20,7 +20,12 @@ def load_coordinates(path):
     return coords['X'].values, coords['Y'].values, coords['Z'].values, coords
 
 def get_input_files(path):
-    return [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    files = []
+    for root, _, filenames in os.walk(path):
+        for filename in filenames:
+            if filename.endswith('.csv'):
+                files.append(os.path.join(root, filename))
+    return files
 
 def prepare_event(E_1_event):
     e_list = []
@@ -80,6 +85,8 @@ def process_single_event(args):
 def process_file(file_name, input_path, output_path, X, Y, Z, coordinates_df, file_idx, total_files):
     file_path = os.path.join(input_path, file_name)
     file_df = pd.read_csv(file_path, converters=converters)
+    # file_df = pd.read_csv(file_path, converters=converters).tail(10).reset_index(drop=True)
+
 
     os.makedirs(output_path, exist_ok=True)
 

@@ -1,3 +1,4 @@
-from modeling_parameters.reconstruction.geant import process
+from events.aggregator import processor
+
 if __name__ == "__main__":
-    process.main()
+    processor.flatten_and_export()
