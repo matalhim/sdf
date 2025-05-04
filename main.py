@@ -1,4 +1,4 @@
-from events.aggregator import processor
+from events.reconstruction import process
 
 if __name__ == "__main__":
-    processor.flatten_and_export()
+    process.main()
