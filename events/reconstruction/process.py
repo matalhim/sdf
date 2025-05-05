@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 import json
 import pandas as pd
@@ -29,8 +30,7 @@ def process_single_event(args):
     idx, row, X, Y, Z, coords_df = args
     theta = row['Theta']
     phi = row['Phi']
-    q_std = row['q_std']  
-
+    q_std = row['q_std']
 
     station_flags = np.array([q is not None for q in q_std], dtype=bool)
 
@@ -52,25 +52,35 @@ def process_single_event(args):
     Y_det = coords_masked['Y'].values
     rho_det = rho_true[station_flags]
 
-
-    Z0 = 0 
+    Z0 = 0
     X0_opt, Y0_opt, Ne_opt, s_opt, loss = optimize_parameters(
         X_det, Y_det, rho_det, theta, phi, Z0, return_loss=True
     )
 
     return {
-        'event_index': idx,
-        'worked_clusters': worked_clusters,
-        'station_flags': station_flags.tolist(),
-        'rho': rho_det.tolist(),
+        'NRUN': row['NRUN'],
+        'NEvent': row['NEvent'],
+        'Theta': row['Theta'],
+        'Phi': row['Phi'],
         'X0_opt': X0_opt,
         'Y0_opt': Y0_opt,
         'Ne_opt': Ne_opt,
         's_opt': s_opt,
         'loss': loss,
+                
+        'NtrackX': row['NtrackX'],
+        'NtrackY': row['NtrackY'],
+        'Ntrack': row['Ntrack'],
+        'IdEv': row['IdEv'],
+        'Nview': row['Nview'],
+        
+        'worked_clusters': worked_clusters,
+        'station_flags': station_flags.tolist(),
+        'rho': rho_det.tolist(),
+        'a_std': row['a_std'],
+        'q_std': row['q_std'],
+        't_std': row['t_std'],
     }
-
-# Главная функция
 
 def main():
     X, Y, Z, coords_df = load_coordinates(COORDINATES_PATH)
@@ -79,6 +89,8 @@ def main():
         REAL_EVENTS_CSV,
         converters={
             'q_std': parse_json_list,
+            'a_std': parse_json_list,
+            't_std': parse_json_list,
             'Theta': float,
             'Phi': float,
         }

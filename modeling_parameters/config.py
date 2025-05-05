@@ -1,8 +1,9 @@
+from __future__ import annotations
 import os
 import glob
 
-PRIM_PARTICLE = 'spe'
-THETA = 27
+PRIM_PARTICLE = 'p'
+THETA = 0
 
 CENTRAL_STATIONS = [0, 3, 4, 7, 8, 9, 10, 11, 14, 13, 18, 20, 21, 27, 29, 30, 32]
 
