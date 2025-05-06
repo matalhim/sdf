@@ -9,11 +9,11 @@ ytick.direction : in
 
 # размеры шрифтов
 font.size : 18
-axes.labelsize : 20
-axes.titlesize : 16
-legend.fontsize : 20
-xtick.labelsize : 18
-ytick.labelsize : 18
+axes.labelsize : 26
+axes.titlesize : 22
+legend.fontsize : 26
+xtick.labelsize : 24
+ytick.labelsize : 24
 
 axes.labelweight : bold
 axes.titleweight : bold

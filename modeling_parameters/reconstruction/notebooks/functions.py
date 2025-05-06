@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 import os
 import ast
@@ -149,7 +150,7 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
     else:
         x_min, x_max = -maxabs - bin_width - 1, maxabs + bin_width + 1
 
-    fig, ax = plt.subplots(figsize=(15, 12))
+    fig, ax = plt.subplots(figsize=(12, 10))
 
     sns.histplot(
         diff_all,
@@ -229,12 +230,12 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
 
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
-        plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров  НШ: {min_stations}'),
-        plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
-        plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
+        # plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров  НШ: {min_stations}'),
+        # plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
+        # plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
         plt.Line2D([0], [0], color='none', label=f'число t{top_k}c: {len(diff_top4)}/{len(diff_all)}'),
-        plt.Line2D([0], [0], color='royalblue', lw=2, label='все события'),
-        plt.Line2D([0], [0], color='crimson', lw=2, label=f't{top_k}c события'),
+        # plt.Line2D([0], [0], color='royalblue', lw=2, label='все события'),
+        # plt.Line2D([0], [0], color='crimson', lw=2, label=f't{top_k}c события'),
         plt.Line2D([0], [0], color='crimson', linestyle='-.', lw=2, label=rf'$\mu_{{\Delta {var}}}=${diff_top4.mean():.1f}'),
         plt.Line2D([0], [0], color='crimson', alpha=0.2, lw=10, label='68%')
     ]
@@ -252,7 +253,7 @@ def plot_two_distributions(opt_all, true_all, opt_top4, true_top4, var, E, limit
         folder_path = os.path.join(PLOTS_GEANT_DIR, f"{PRIM_PARTICLE}{THETA}", f"E{E}")
         os.makedirs(folder_path, exist_ok=True)  
         filename = os.path.join(folder_path, f"delta_{var}_2.png")
-        plt.savefig(filename, dpi=500, bbox_inches='tight')
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close()
         print(f"График сохранён в {filename}")
     else:
