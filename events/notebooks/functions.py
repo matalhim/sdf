@@ -1,5 +1,7 @@
+import numpy as np
 from __future__ import annotations
 import ast
+from numba import njit
 from modeling_parameters.config import (
     CENTRAL_STATIONS,
 )
@@ -9,6 +11,14 @@ def ast_df(df):
     df['station_flags'] = df['station_flags'].apply(ast.literal_eval)
     df['worked_clusters'] = df['worked_clusters'].apply(ast.literal_eval)
     df['rho'] = df['rho'].apply(ast.literal_eval)
+    
+def ast_modeling_df(df):
+    df['r'] = df['r'].apply(ast.literal_eval)
+    df['worked_stations'] = df['worked_stations'].apply(ast.literal_eval)
+    df['worked_clusters'] = df['worked_clusters'].apply(ast.literal_eval)
+    
+    df['rho'] = df['rho'].apply(ast.literal_eval)
+    
     
 def is_central_stations(row, n):
     station_flags = row['station_flags']
@@ -30,3 +40,5 @@ def is_central_stations(row, n):
     central_count = sum(1 for idx in top_n_stations if idx in CENTRAL_STATIONS)
     
     return central_count >= n
+
+
