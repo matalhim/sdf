@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 from scipy.optimize import differential_evolution, minimize
@@ -79,10 +80,10 @@ def optimize_parameters(X_det, Y_det, rho_geant, theta_g, phi_g, Z0_g, return_lo
     else:
         return result_min.x
 
-def filter_clusters(E_stations):
+def filter_clusters(E_stations, threshold = 0.75):
     N_e = E_stations['E'] / 8.2
     S = 0.8 * 0.8 * 4
-    mask_energy = N_e > 0.75
+    mask_energy = N_e > threshold
 
     E_stations = E_stations.copy()
     E_stations['mask_energy'] = mask_energy

@@ -10,6 +10,8 @@ modeling_parameters/reconstruction/geant/output
 modeling_parameters/reconstruction/output
 events/output
 
+events/notebooks/geant_data/spe
+
 
 __init__.py
 __pycache__

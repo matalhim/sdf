@@ -1,6 +1,6 @@
 from __future__ import annotations
-prim_particle = 'p'
-theta = 0
+prim_particle = 'spe'
+theta = 27
 
 columns = [
     "N_event", "NRUN", "NEVENT", "PART0", "E0", "Teta", "Fi", "XAxisShift", "YAxisShift", "H1INT",
