@@ -281,7 +281,6 @@ def plot_single_distribution_Ne(opt, true, var, E, limit, bin_width, min_station
     """
     diff = np.log10(opt / true)
     mean = diff.mean()
-    
     abs_dev = np.abs(diff - mean)
     maxabs = max(abs_dev)
     radius = np.percentile(abs_dev, 68)
@@ -378,7 +377,7 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
 
     diff_all = np.log10(opt_all / true_all)
     diff_top4 = np.log10(opt_top4 / true_top4)
-
+    print(np.std(diff_top4))
     lower_all, upper_all = get_symmetric_range(diff_all)
     lower_top4, upper_top4 = get_symmetric_range(diff_top4)
 
@@ -393,7 +392,7 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
     else:
         x_min, x_max = -maxabs - bin_width - 1, maxabs + bin_width + 1
 
-    fig, ax = plt.subplots(figsize=(15, 12))
+    fig, ax = plt.subplots(figsize=(12, 10))
 
     sns.histplot(
         diff_all,
@@ -473,12 +472,12 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
 
     legend_elements = [
         plt.Line2D([0], [0], color='none', label=rf'$\mathrm{{{PRIM_PARTICLE}}},\ E_0 = 10^{{{E}}}\text{{эВ}},\ \theta = {THETA}\degree$'),
-        plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров  НШ: {min_stations}'),
-        plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
-        plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
+        # plt.Line2D([0], [0], color='none', label=f'мин сработавших кластеров  НШ: {min_stations}'),
+        # plt.Line2D([0], [0], color='none', label=r'$C \subset S$ - центр. станции'),
+        # plt.Line2D([0], [0], color='none', label = rf't{top_k}c: $\text{{argmax}}^{{{top_k}}}_{{\substack{{i \in S}}}} \rho_i \subset C$'),
         plt.Line2D([0], [0], color='none', label=f'число t{top_k}c: {len(diff_top4)}/{len(diff_all)}'),
-        plt.Line2D([0], [0], color='royalblue', lw=2, label='все события'),
-        plt.Line2D([0], [0], color='crimson', lw=2, label=f't{top_k}c события'),
+        # plt.Line2D([0], [0], color='royalblue', lw=2, label='все события'),
+        # plt.Line2D([0], [0], color='crimson', lw=2, label=f't{top_k}c события'),
         plt.Line2D([0], [0], color='crimson', linestyle='-.', lw=2,  label = rf'$\mu_{{\Delta  lg(N_e)}}$={mean:.1f}'),
         plt.Line2D([0], [0], color='crimson', alpha=0.2, lw=10, label='68%')
     ]
@@ -497,7 +496,7 @@ def plot_two_distributions_Ne(opt_all, true_all, opt_top4, true_top4, var, E, li
     if save:
         folder_path = os.path.join(PLOTS_GEANT_DIR, f"{PRIM_PARTICLE}{THETA}", f"E{E}")
         os.makedirs(folder_path, exist_ok=True)  
-        filename = os.path.join(folder_path, f"delta_lg_{var}_2.png")
+        filename = os.path.join(folder_path, f"delta_lg_{var}_2.jpg")
         plt.savefig(filename, dpi=500, bbox_inches='tight')
         plt.close()
         print(f"График сохранён в {filename}")

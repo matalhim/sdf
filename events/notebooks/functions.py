@@ -55,7 +55,6 @@ def binned_log_stats(r_values, rho_values,  num_bins=20, r_min_val=1, r_max_val=
 
     rho_values_per_bin = [[] for _ in range(len(r_bin_centers))]
 
-    # Заполняем бины
     for r_val, rho_val in zip(r_values, rho_values):
         bin_idx = np.searchsorted(r_log_bins, r_val) - 1
         if 0 <= bin_idx < len(r_bin_centers):
