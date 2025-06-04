@@ -3,6 +3,11 @@ import struct
 import math
 import sys
 
+PARTICLE_MASS = {
+    5: 0.105658369,  
+    6: 0.105658369, 
+}
+
 def read_float32_block(f, count):
     return list(struct.unpack(f"{count}f", f.read(count * 4)))
 
@@ -69,7 +74,14 @@ def process_file(filename):
                                 if pid in (2, 3):
                                     dNdR_e[indexR] += 1
                                 elif pid in (5, 6):
-                                    dNdR_mu[indexR] += 1
+                                    px = subblock[7 * k + 1]
+                                    py = subblock[7 * k + 2]
+                                    pz = subblock[7 * k + 3]
+                                    p2 = px**2 + py**2 + pz**2
+                                    mass = PARTICLE_MASS.get(pid, 0)
+                                    energy = math.sqrt(p2 + mass**2)
+                                    if energy > 3.0: 
+                                        dNdR_mu[indexR] += 1
 
             except StopIteration:
                 break
